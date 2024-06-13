@@ -15920,6 +15920,10 @@ static uint8_t regname[][30] = {
 };
 #endif
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 // Compile a regular expression into internal code.
 // Returns the program in allocated memory.
 // Use vim_regfree() to free the memory.
@@ -15932,7 +15936,7 @@ regprog_T *vim_regcomp(const char *expr_arg, int re_flags)
   regexp_engine = (int)p_re;
 
   // Check for prefix "\%#=", that sets the regexp engine
-  if (strncmp(expr, S_LEN("\\%#=")) == 0) {
+  if (strncmp_(expr, S_LEN("\\%#=")) == 0) {
     int newengine = expr[4] - '0';
 
     if (newengine == AUTOMATIC_ENGINE

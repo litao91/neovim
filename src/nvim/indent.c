@@ -769,6 +769,10 @@ int get_number_indent(linenr_T lnum)
   return (int)col;
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// This is called when 'breakindentopt' is changed and when a window is
 /// initialized
 bool briopt_check(win_T *wp)
@@ -782,20 +786,20 @@ bool briopt_check(win_T *wp)
   char *p = wp->w_p_briopt;
   while (*p != NUL) {
     // Note: Keep this in sync with p_briopt_values
-    if (strncmp(p, S_LEN("shift:")) == 0
+    if (strncmp_(p, S_LEN("shift:")) == 0
         && ((p[6] == '-' && ascii_isdigit(p[7])) || ascii_isdigit(p[6]))) {
       p += 6;
       bri_shift = getdigits_int(&p, true, 0);
-    } else if (strncmp(p, S_LEN("min:")) == 0 && ascii_isdigit(p[4])) {
+    } else if (strncmp_(p, S_LEN("min:")) == 0 && ascii_isdigit(p[4])) {
       p += 4;
       bri_min = getdigits_int(&p, true, 0);
-    } else if (strncmp(p, S_LEN("sbr")) == 0) {
+    } else if (strncmp_(p, S_LEN("sbr")) == 0) {
       p += 3;
       bri_sbr = true;
-    } else if (strncmp(p, S_LEN("list:")) == 0) {
+    } else if (strncmp_(p, S_LEN("list:")) == 0) {
       p += 5;
       bri_list = (int)getdigits(&p, false, 0);
-    } else if (strncmp(p, S_LEN("column:")) == 0) {
+    } else if (strncmp_(p, S_LEN("column:")) == 0) {
       p += 7;
       bri_vcol = (int)getdigits(&p, false, 0);
     }

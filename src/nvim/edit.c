@@ -74,6 +74,10 @@
 #include "nvim/vim_defs.h"
 #include "nvim/window.h"
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 typedef struct {
   VimState state;
   cmdarg_T *ca;
@@ -3095,7 +3099,7 @@ bool in_cinkeys(int keytyped, int when, bool line_is_empty)
       if (try_match && keytyped == 'e' && curwin->w_cursor.col >= 4) {
         p = get_cursor_line_ptr();
         if (skipwhite(p) == p + curwin->w_cursor.col - 4
-            && strncmp(p + curwin->w_cursor.col - 4, S_LEN("else")) == 0) {
+            && strncmp_(p + curwin->w_cursor.col - 4, S_LEN("else")) == 0) {
           return true;
         }
       }

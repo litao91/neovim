@@ -4202,6 +4202,10 @@ static void syn_cmd_match(exarg_T *eap, int syncing)
   }
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// Handle ":syntax region {group-name} [matchgroup={group-name}]
 ///              start {start} .. [skip {skip}] end {end} .. [{options}]".
 ///
@@ -4296,7 +4300,7 @@ static void syn_cmd_region(exarg_T *eap, int syncing)
 
     if (item == ITEM_MATCHGROUP) {
       char *p = skiptowhite(rest);
-      if ((p - rest == 4 && strncmp(rest, S_LEN("NONE")) == 0) || eap->skip) {
+      if ((p - rest == 4 && strncmp_(rest, S_LEN("NONE")) == 0) || eap->skip) {
         matchgroup_id = 0;
       } else {
         matchgroup_id = syn_check_group(rest, (size_t)(p - rest));
@@ -4815,10 +4819,10 @@ static void syn_cmd_sync(exarg_T *eap, int syncing)
       } else if (!eap->skip) {
         curwin->w_s->b_syn_sync_id = (int16_t)syn_name2id("Comment");
       }
-    } else if (strncmp(key, S_LEN("LINES")) == 0
-               || strncmp(key, S_LEN("MINLINES")) == 0
-               || strncmp(key, S_LEN("MAXLINES")) == 0
-               || strncmp(key, S_LEN("LINEBREAKS")) == 0) {
+    } else if (strncmp_(key, S_LEN("LINES")) == 0
+               || strncmp_(key, S_LEN("MINLINES")) == 0
+               || strncmp_(key, S_LEN("MAXLINES")) == 0
+               || strncmp_(key, S_LEN("LINEBREAKS")) == 0) {
       if (key[4] == 'S') {
         arg_end = key + 6;
       } else if (key[0] == 'L') {

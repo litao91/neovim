@@ -1732,6 +1732,10 @@ static void find_mps_values(int *initc, int *findc, bool *backwards, bool switch
   }
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 // findmatchlimit -- find the matching paren or brace, if it exists within
 // maxtravel lines of the cursor.  A maxtravel of 0 means search until falling
 // off the edge of the file.
@@ -1821,9 +1825,9 @@ pos_T *findmatchlimit(oparg_T *oap, int initc, int flags, int64_t maxtravel)
         ptr = skipwhite(linep);
         if (*ptr == '#' && pos.col <= (colnr_T)(ptr - linep)) {
           ptr = skipwhite(ptr + 1);
-          if (strncmp(ptr, S_LEN("if")) == 0
-              || strncmp(ptr, S_LEN("endif")) == 0
-              || strncmp(ptr, S_LEN("el")) == 0) {
+          if (strncmp_(ptr, S_LEN("if")) == 0
+              || strncmp_(ptr, S_LEN("endif")) == 0
+              || strncmp_(ptr, S_LEN("el")) == 0) {
             hash_dir = 1;
           }
         } else if (linep[pos.col] == '/') {  // Are we on a comment?
@@ -1894,9 +1898,9 @@ pos_T *findmatchlimit(oparg_T *oap, int initc, int flags, int64_t maxtravel)
       }
       if (initc != '#') {
         ptr = skipwhite(skipwhite(linep) + 1);
-        if (strncmp(ptr, S_LEN("if")) == 0 || strncmp(ptr, S_LEN("el")) == 0) {
+        if (strncmp_(ptr, S_LEN("if")) == 0 || strncmp_(ptr, S_LEN("el")) == 0) {
           hash_dir = 1;
-        } else if (strncmp(ptr, S_LEN("endif")) == 0) {
+        } else if (strncmp_(ptr, S_LEN("endif")) == 0) {
           hash_dir = -1;
         } else {
           return NULL;
@@ -1921,29 +1925,29 @@ pos_T *findmatchlimit(oparg_T *oap, int initc, int flags, int64_t maxtravel)
         pos.col = (colnr_T)(ptr - linep);
         ptr = skipwhite(ptr + 1);
         if (hash_dir > 0) {
-          if (strncmp(ptr, S_LEN("if")) == 0) {
+          if (strncmp_(ptr, S_LEN("if")) == 0) {
             count++;
-          } else if (strncmp(ptr, S_LEN("el")) == 0) {
+          } else if (strncmp_(ptr, S_LEN("el")) == 0) {
             if (count == 0) {
               return &pos;
             }
-          } else if (strncmp(ptr, S_LEN("endif")) == 0) {
+          } else if (strncmp_(ptr, S_LEN("endif")) == 0) {
             if (count == 0) {
               return &pos;
             }
             count--;
           }
         } else {
-          if (strncmp(ptr, S_LEN("if")) == 0) {
+          if (strncmp_(ptr, S_LEN("if")) == 0) {
             if (count == 0) {
               return &pos;
             }
             count--;
-          } else if (initc == '#' && strncmp(ptr, S_LEN("el")) == 0) {
+          } else if (initc == '#' && strncmp_(ptr, S_LEN("el")) == 0) {
             if (count == 0) {
               return &pos;
             }
-          } else if (strncmp(ptr, S_LEN("endif")) == 0) {
+          } else if (strncmp_(ptr, S_LEN("endif")) == 0) {
             count++;
           }
         }
@@ -3891,7 +3895,7 @@ search_line:
           // is not considered to be a comment line.
           if (skip_comments) {
             if ((*line != '#'
-                 || strncmp(skipwhite(line + 1), S_LEN("define")) != 0)
+                 || strncmp_(skipwhite(line + 1), S_LEN("define")) != 0)
                 && get_leader_len(line, NULL, false, true)) {
               matched = false;
             }

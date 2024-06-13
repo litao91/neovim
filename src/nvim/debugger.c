@@ -42,6 +42,10 @@
 #include "nvim/types_defs.h"
 #include "nvim/vim_defs.h"
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// batch mode debugging: don't save and restore typeahead.
 static bool debug_greedy = false;
 
@@ -521,18 +525,18 @@ static int dbg_parsearg(char *arg, garray_T *gap)
   struct debuggy *bp = &DEBUGGY(gap, gap->ga_len);
 
   // Find "func" or "file".
-  if (strncmp(p, S_LEN("func")) == 0) {
+  if (strncmp_(p, S_LEN("func")) == 0) {
     bp->dbg_type = DBG_FUNC;
-  } else if (strncmp(p, S_LEN("file")) == 0) {
+  } else if (strncmp_(p, S_LEN("file")) == 0) {
     bp->dbg_type = DBG_FILE;
-  } else if (gap != &prof_ga && strncmp(p, S_LEN("here")) == 0) {
+  } else if (gap != &prof_ga && strncmp_(p, S_LEN("here")) == 0) {
     if (curbuf->b_ffname == NULL) {
       emsg(_(e_noname));
       return FAIL;
     }
     bp->dbg_type = DBG_FILE;
     here = true;
-  } else if (gap != &prof_ga && strncmp(p, S_LEN("expr")) == 0) {
+  } else if (gap != &prof_ga && strncmp_(p, S_LEN("expr")) == 0) {
     bp->dbg_type = DBG_EXPR;
   } else {
     semsg(_(e_invarg2), p);
@@ -559,7 +563,7 @@ static int dbg_parsearg(char *arg, garray_T *gap)
   }
 
   if (bp->dbg_type == DBG_FUNC) {
-    bp->dbg_name = xstrdup(strncmp(p, S_LEN("g:")) == 0 ? p + 2 : p);
+    bp->dbg_name = xstrdup(strncmp_(p, S_LEN("g:")) == 0 ? p + 2 : p);
   } else if (here) {
     bp->dbg_name = xstrdup(curbuf->b_ffname);
   } else if (bp->dbg_type == DBG_EXPR) {

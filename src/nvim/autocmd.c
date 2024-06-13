@@ -72,6 +72,12 @@
 static const char e_autocommand_nesting_too_deep[]
   = N_("E218: Autocommand nesting too deep");
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
+
+
 // Naming Conventions:
 //  - general autocmd behavior start with au_
 //  - AutoCmd start with aucmd_
@@ -1245,7 +1251,7 @@ void ex_doautoall(exarg_T *eap)
 bool check_nomodeline(char **argp)
   FUNC_ATTR_NONNULL_ALL FUNC_ATTR_WARN_UNUSED_RESULT
 {
-  if (strncmp(*argp, S_LEN("<nomodeline>")) == 0) {
+  if (strncmp_(*argp, S_LEN("<nomodeline>")) == 0) {
     *argp = skipwhite(*argp + 12);
     return false;
   }
@@ -2359,7 +2365,7 @@ theend:
 bool aupat_is_buflocal(const char *pat, int patlen)
   FUNC_ATTR_PURE
 {
-  return patlen >= 8 && strncmp(pat, S_LEN("<buffer")) == 0 && (pat)[patlen - 1] == '>';
+  return patlen >= 8 && strncmp_(pat, S_LEN("<buffer")) == 0 && (pat)[patlen - 1] == '>';
 }
 
 int aupat_get_buflocal_nr(const char *pat, int patlen)

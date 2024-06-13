@@ -823,6 +823,10 @@ void ex_viusage(exarg_T *eap)
   do_cmdline_cmd("help normal-index");
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// Generate tags in one help directory
 ///
 /// @param dir  Path to the doc directory
@@ -1015,7 +1019,7 @@ static void helptags_one(char *dir, const char *ext, const char *tagfname, bool 
     // Write the tags into the file.
     for (int i = 0; i < ga.ga_len; i++) {
       s = ((char **)ga.ga_data)[i];
-      if (strncmp(s, S_LEN("help-tags\t")) == 0) {
+      if (strncmp_(s, S_LEN("help-tags\t")) == 0) {
         // help-tags entry was added in formatted form
         fputs(s, fd_tags);
       } else {
@@ -1149,7 +1153,7 @@ void ex_helptags(exarg_T *eap)
   bool add_help_tags = false;
 
   // Check for ":helptags ++t {dir}".
-  if (strncmp(eap->arg, S_LEN("++t")) == 0 && ascii_iswhite(eap->arg[3])) {
+  if (strncmp_(eap->arg, S_LEN("++t")) == 0 && ascii_iswhite(eap->arg[3])) {
     add_help_tags = true;
     eap->arg = skipwhite(eap->arg + 3);
   }

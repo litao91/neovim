@@ -89,6 +89,10 @@
 #include "nvim/viml/parser/parser_defs.h"
 #include "nvim/window.h"
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// Last value of prompt_id, incremented when doing new prompt
 static unsigned last_prompt_id = 0;
 
@@ -2799,13 +2803,13 @@ int check_opt_wim(void)
     if (p[i] != NUL && p[i] != ',' && p[i] != ':') {
       return FAIL;
     }
-    if (i == 7 && strncmp(p, S_LEN("longest")) == 0) {
+    if (i == 7 && strncmp_(p, S_LEN("longest")) == 0) {
       new_wim_flags[idx] |= WIM_LONGEST;
-    } else if (i == 4 && strncmp(p, S_LEN("full")) == 0) {
+    } else if (i == 4 && strncmp_(p, S_LEN("full")) == 0) {
       new_wim_flags[idx] |= WIM_FULL;
-    } else if (i == 4 && strncmp(p, S_LEN("list")) == 0) {
+    } else if (i == 4 && strncmp_(p, S_LEN("list")) == 0) {
       new_wim_flags[idx] |= WIM_LIST;
-    } else if (i == 8 && strncmp(p, S_LEN("lastused")) == 0) {
+    } else if (i == 8 && strncmp_(p, S_LEN("lastused")) == 0) {
       new_wim_flags[idx] |= WIM_BUFLASTUSED;
     } else {
       return FAIL;

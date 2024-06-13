@@ -758,6 +758,10 @@ static int swapfile_process_running(const ZeroBlock *b0p, const char *swap_fname
   return os_proc_running(pid) ? pid : 0;
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// Try to recover curbuf from the .swp file.
 ///
 /// @param checkext  if true, check the extension and detect whether it is a swapfile.
@@ -864,7 +868,7 @@ void ml_recover(bool checkext)
     goto theend;
   }
   ZeroBlock *b0p = hp->bh_data;
-  if (strncmp(b0p->b0_version, S_LEN("VIM 3.0")) == 0) {
+  if (strncmp_(b0p->b0_version, S_LEN("VIM 3.0")) == 0) {
     msg_start();
     msg_outtrans(mfp->mf_fname, MSG_HIST);
     msg_puts_attr(_(" cannot be used with this version of Vim.\n"),
@@ -1538,7 +1542,7 @@ static time_t swapfile_info(char *fname)
   int fd = os_open(fname, O_RDONLY, 0);
   if (fd >= 0) {
     if (read_eintr(fd, &b0, sizeof(b0)) == sizeof(b0)) {
-      if (strncmp(b0.b0_version, S_LEN("VIM 3.0")) == 0) {
+      if (strncmp_(b0.b0_version, S_LEN("VIM 3.0")) == 0) {
         msg_puts(_("         [from Vim version 3.0]"));
       } else if (ml_check_b0_id(&b0) == FAIL) {
         msg_puts(_("         [does not look like a Vim swap file]"));

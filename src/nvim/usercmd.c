@@ -420,12 +420,16 @@ char *get_user_cmd_complete(expand_T *xp, int idx)
   return cmd_compl;
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 int cmdcomplete_str_to_type(const char *complete_str)
 {
-  if (strncmp(complete_str, S_LEN("custom,")) == 0) {
+  if (strncmp_(complete_str, S_LEN("custom,")) == 0) {
     return EXPAND_USER_DEFINED;
   }
-  if (strncmp(complete_str, S_LEN("customlist,")) == 0) {
+  if (strncmp_(complete_str, S_LEN("customlist,")) == 0) {
     return EXPAND_USER_LIST;
   }
 
@@ -1056,7 +1060,7 @@ void ex_delcommand(exarg_T *eap)
   const char *arg = eap->arg;
   bool buffer_only = false;
 
-  if (strncmp(arg, S_LEN("-buffer")) == 0 && ascii_iswhite(arg[7])) {
+  if (strncmp_(arg, S_LEN("-buffer")) == 0 && ascii_iswhite(arg[7])) {
     buffer_only = true;
     arg = skipwhite(arg + 7);
   }

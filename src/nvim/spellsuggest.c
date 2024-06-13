@@ -387,6 +387,10 @@ enum {
 static int sps_flags = SPS_BEST;  ///< flags from 'spellsuggest'
 static int sps_limit = 9999;      ///< max nr of suggestions given
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// Check the 'spellsuggest' option.  Return FAIL if it's wrong.
 /// Sets "sps_flags" and "sps_limit".
 int spell_check_sps(void)
@@ -413,9 +417,9 @@ int spell_check_sps(void)
       f = SPS_FAST;
     } else if (strcmp(buf, "double") == 0) {
       f = SPS_DOUBLE;
-    } else if (strncmp(buf, S_LEN("expr:")) != 0
-               && strncmp(buf, S_LEN("file:")) != 0
-               && (strncmp(buf, S_LEN("timeout:")) != 0
+    } else if (strncmp_(buf, S_LEN("expr:")) != 0
+               && strncmp_(buf, S_LEN("file:")) != 0
+               && (strncmp_(buf, S_LEN("timeout:")) != 0
                    || (!ascii_isdigit(buf[8])
                        && !(buf[8] == '-' && ascii_isdigit(buf[9]))))) {
       f = -1;
@@ -543,7 +547,7 @@ void spell_suggest(int count)
     msg_row = Rows - 1;         // for when 'cmdheight' > 1
     lines_left = Rows;          // avoid more prompt
     char *fmt = _("Change \"%.*s\" to:");
-    if (cmdmsg_rl && strncmp(fmt, S_LEN("Change")) == 0) {
+    if (cmdmsg_rl && strncmp_(fmt, S_LEN("Change")) == 0) {
       // And now the rabbit from the high hat: Avoid showing the
       // untranslated message rightleft.
       fmt = ":ot \"%.*s\" egnahC";
@@ -792,7 +796,7 @@ static void spell_find_suggest(char *badptr, int badlen, suginfo_T *su, int maxc
   for (char *p = sps_copy; *p != NUL;) {
     copy_option_part(&p, buf, MAXPATHL, ",");
 
-    if (strncmp(buf, S_LEN("expr:")) == 0) {
+    if (strncmp_(buf, S_LEN("expr:")) == 0) {
       // Evaluate an expression.  Skip this when called recursively,
       // when using spellsuggest() in the expression.
       if (!expr_busy) {
@@ -800,10 +804,10 @@ static void spell_find_suggest(char *badptr, int badlen, suginfo_T *su, int maxc
         spell_suggest_expr(su, buf + 5);
         expr_busy = false;
       }
-    } else if (strncmp(buf, S_LEN("file:")) == 0) {
+    } else if (strncmp_(buf, S_LEN("file:")) == 0) {
       // Use list of suggestions in a file.
       spell_suggest_file(su, buf + 5);
-    } else if (strncmp(buf, S_LEN("timeout:")) == 0) {
+    } else if (strncmp_(buf, S_LEN("timeout:")) == 0) {
       // Limit the time searching for suggestions.
       spell_suggest_timeout = atoi(buf + 8);
     } else if (!did_intern) {

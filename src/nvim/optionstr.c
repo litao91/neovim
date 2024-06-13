@@ -277,6 +277,10 @@ static bool valid_filetype(const char *val)
   return valid_name(val, ".-_");
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// Handle setting 'signcolumn' for value 'val'. Store minimum and maximum width.
 ///
 /// @return OK when the value is valid, FAIL otherwise
@@ -288,15 +292,15 @@ int check_signcolumn(win_T *wp)
   }
 
   if (check_opt_strings(val, p_scl_values, false) == OK) {
-    if (!strncmp(val, S_LEN("no"))) {  // no
+    if (!strncmp_(val, S_LEN("no"))) {  // no
       wp->w_minscwidth = wp->w_maxscwidth = SCL_NO;
-    } else if (!strncmp(val, S_LEN("nu")) && (wp->w_p_nu || wp->w_p_rnu)) {  // number
+    } else if (!strncmp_(val, S_LEN("nu")) && (wp->w_p_nu || wp->w_p_rnu)) {  // number
       wp->w_minscwidth = wp->w_maxscwidth = SCL_NUM;
-    } else if (!strncmp(val, S_LEN("yes:"))) {  // yes:<NUM>
+    } else if (!strncmp_(val, S_LEN("yes:"))) {  // yes:<NUM>
       wp->w_minscwidth = wp->w_maxscwidth = val[4] - '0';
     } else if (*val == 'y') {  // yes
       wp->w_minscwidth = wp->w_maxscwidth = 1;
-    } else if (!strncmp(val, S_LEN("auto:"))) {  // auto:<NUM>
+    } else if (!strncmp_(val, S_LEN("auto:"))) {  // auto:<NUM>
       wp->w_minscwidth = 0;
       wp->w_maxscwidth = val[5] - '0';
     } else {  // auto
@@ -306,7 +310,7 @@ int check_signcolumn(win_T *wp)
     return OK;
   }
 
-  if (strncmp(val, S_LEN("auto:")) != 0
+  if (strncmp_(val, S_LEN("auto:")) != 0
       || strlen(val) != 8
       || !ascii_isdigit(val[5])
       || val[6] != '-'

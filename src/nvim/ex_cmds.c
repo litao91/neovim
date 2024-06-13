@@ -100,6 +100,10 @@
 #include "nvim/vim_defs.h"
 #include "nvim/window.h"
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// Case matching style to use for :substitute
 typedef enum {
   kSubHonorOptions = 0,  ///< Honor the user's 'ignorecase'/'smartcase' options
@@ -1360,11 +1364,11 @@ char *make_filter_cmd(char *cmd, char *itmp, char *otmp)
 {
   bool is_fish_shell =
 #if defined(UNIX)
-    strncmp(invocation_path_tail(p_sh, NULL), S_LEN("fish")) == 0;
+    strncmp_(invocation_path_tail(p_sh, NULL), S_LEN("fish")) == 0;
 #else
     false;
 #endif
-  bool is_pwsh = strncmp(invocation_path_tail(p_sh, NULL), S_LEN("pwsh")) == 0
+  bool is_pwsh = strncmp_(invocation_path_tail(p_sh, NULL), S_LEN("pwsh")) == 0
                  || strncmp(invocation_path_tail(p_sh, NULL), "powershell",
                             10) == 0;
 

@@ -57,11 +57,15 @@ static char *menu_mode_chars[] = { "n", "v", "s", "o", "i", "c", "tl", "t" };
 static const char e_notsubmenu[] = N_("E327: Part of menu-item path is not sub-menu");
 static const char e_nomenu[] = N_("E329: No menu \"%s\"");
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 // Return true if "name" is a window toolbar menu name.
 static bool menu_is_winbar(const char *const name)
   FUNC_ATTR_PURE FUNC_ATTR_WARN_UNUSED_RESULT FUNC_ATTR_NONNULL_ALL
 {
-  return (strncmp(name, S_LEN("WinBar")) == 0);
+  return (strncmp_(name, S_LEN("WinBar")) == 0);
 }
 
 static vimmenu_T **get_root_menu(const char *const name)
@@ -90,17 +94,17 @@ void ex_menu(exarg_T *eap)
   char *arg = eap->arg;
 
   while (true) {
-    if (strncmp(arg, S_LEN("<script>")) == 0) {
+    if (strncmp_(arg, S_LEN("<script>")) == 0) {
       noremap = REMAP_SCRIPT;
       arg = skipwhite(arg + 8);
       continue;
     }
-    if (strncmp(arg, S_LEN("<silent>")) == 0) {
+    if (strncmp_(arg, S_LEN("<silent>")) == 0) {
       silent = true;
       arg = skipwhite(arg + 8);
       continue;
     }
-    if (strncmp(arg, S_LEN("<special>")) == 0) {
+    if (strncmp_(arg, S_LEN("<special>")) == 0) {
       // Ignore obsolete "<special>" modifier.
       arg = skipwhite(arg + 9);
       continue;
@@ -110,7 +114,7 @@ void ex_menu(exarg_T *eap)
 
   // Locate an optional "icon=filename" argument
   // TODO(nvim): Currently this is only parsed. Should expose it to UIs.
-  if (strncmp(arg, S_LEN("icon=")) == 0) {
+  if (strncmp_(arg, S_LEN("icon=")) == 0) {
     arg += 5;
     while (*arg != NUL && *arg != ' ') {
       if (*arg == '\\') {
@@ -153,10 +157,10 @@ void ex_menu(exarg_T *eap)
   pri_tab[MENUDEPTH] = -1;              // mark end of the table
 
   // Check for "disable" or "enable" argument.
-  if (strncmp(arg, S_LEN("enable")) == 0 && ascii_iswhite(arg[6])) {
+  if (strncmp_(arg, S_LEN("enable")) == 0 && ascii_iswhite(arg[6])) {
     enable = kTrue;
     arg = skipwhite(arg + 6);
-  } else if (strncmp(arg, S_LEN("disable")) == 0 && ascii_iswhite(arg[7])) {
+  } else if (strncmp_(arg, S_LEN("disable")) == 0 && ascii_iswhite(arg[7])) {
     enable = kFalse;
     arg = skipwhite(arg + 7);
   }
@@ -889,10 +893,10 @@ char *set_context_in_menu_cmd(expand_T *xp, const char *cmd, char *arg, bool for
   }
 
   if (!ascii_iswhite(*p)) {
-    if (strncmp(arg, S_LEN("enable")) == 0
+    if (strncmp_(arg, S_LEN("enable")) == 0
         && (arg[6] == NUL || ascii_iswhite(arg[6]))) {
       p = arg + 6;
-    } else if (strncmp(arg, S_LEN("disable")) == 0
+    } else if (strncmp_(arg, S_LEN("disable")) == 0
                && (arg[7] == NUL || ascii_iswhite(arg[7]))) {
       p = arg + 7;
     } else {
@@ -1333,14 +1337,14 @@ bool menu_is_menubar(const char *const name)
 bool menu_is_popup(const char *const name)
   FUNC_ATTR_PURE FUNC_ATTR_WARN_UNUSED_RESULT FUNC_ATTR_NONNULL_ALL
 {
-  return strncmp(name, S_LEN("PopUp")) == 0;
+  return strncmp_(name, S_LEN("PopUp")) == 0;
 }
 
 // Return true if "name" is a toolbar menu name.
 bool menu_is_toolbar(const char *const name)
   FUNC_ATTR_PURE FUNC_ATTR_WARN_UNUSED_RESULT FUNC_ATTR_NONNULL_ALL
 {
-  return strncmp(name, S_LEN("ToolBar")) == 0;
+  return strncmp_(name, S_LEN("ToolBar")) == 0;
 }
 
 /// @return  true if the name is a menu separator identifier: Starts and ends
@@ -1415,7 +1419,7 @@ void show_popupmenu(void)
   vimmenu_T *menu;
 
   for (menu = root_menu; menu != NULL; menu = menu->next) {
-    if (strncmp("PopUp", menu->name, 5) == 0 && strncmp(menu->name + 5, mode, mode_len) == 0) {
+    if (strncmp_("PopUp", menu->name, 5) == 0 && strncmp(menu->name + 5, mode, mode_len) == 0) {
       break;
     }
   }
@@ -1701,7 +1705,7 @@ void ex_menutranslate(exarg_T *eap)
   }
 
   // ":menutrans clear": clear all translations.
-  if (strncmp(arg, S_LEN("clear")) == 0 && ends_excmd(*skipwhite(arg + 5))) {
+  if (strncmp_(arg, S_LEN("clear")) == 0 && ends_excmd(*skipwhite(arg + 5))) {
     GA_DEEP_CLEAR(&menutrans_ga, menutrans_T, FREE_MENUTRANS);
 
     // Delete all "menutrans_" global variables.

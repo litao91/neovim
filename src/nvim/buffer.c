@@ -131,6 +131,12 @@ typedef enum {
   kBffInitChangedtick = 2,
 } BufFreeFlags;
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
+
+
 /// @return  the highest possible buffer number
 int get_highest_fnum(void)
 {
@@ -3850,8 +3856,8 @@ static int chk_modeline(linenr_T lnum, int flags)
   int prev = -1;
   for (s = ml_get(lnum); *s != NUL; s++) {
     if (prev == -1 || ascii_isspace(prev)) {
-      if ((prev != -1 && strncmp(s, S_LEN("ex:")) == 0)
-          || strncmp(s, S_LEN("vi:")) == 0) {
+      if ((prev != -1 && strncmp_(s, S_LEN("ex:")) == 0)
+          || strncmp_(s, S_LEN("vi:")) == 0) {
         break;
       }
       // Accept both "vim" and "Vim".
@@ -3867,7 +3873,7 @@ static int chk_modeline(linenr_T lnum, int flags)
 
         if (*e == ':'
             && (s[0] != 'V'
-                || strncmp(skipwhite(e + 1), S_LEN("set")) == 0)
+                || strncmp_(skipwhite(e + 1), S_LEN("set")) == 0)
             && (s[3] == ':'
                 || (VIM_VERSION_100 >= vers && isdigit((uint8_t)s[3]))
                 || (VIM_VERSION_100 < vers && s[3] == '<')
@@ -3916,8 +3922,8 @@ static int chk_modeline(linenr_T lnum, int flags)
     // "vi:set opt opt opt: foo" -- foo not interpreted
     // "vi:opt opt opt: foo" -- foo interpreted
     // Accept "se" for compatibility with Elvis.
-    if (strncmp(s, S_LEN("set ")) == 0
-        || strncmp(s, S_LEN("se ")) == 0) {
+    if (strncmp_(s, S_LEN("set ")) == 0
+        || strncmp_(s, S_LEN("se ")) == 0) {
       if (*e != ':') {                // no terminating ':'?
         break;
       }

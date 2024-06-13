@@ -851,6 +851,10 @@ int get_mouse_button(int code, bool *is_click, bool *is_drag)
   return 0;         // Shouldn't get here
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// Replace any terminal code strings with the equivalent internal representation.
 ///
 /// Used for the "from" and "to" part of a mapping, and the "to" part of a menu command.
@@ -904,7 +908,7 @@ char *replace_termcodes(const char *const from, const size_t from_len, char **co
     }
     // Check for special <> keycodes, like "<C-S-LeftMouse>"
     if (do_special && ((flags & REPTERM_DO_LT) || ((end - src) >= 3
-                                                   && strncmp(src, S_LEN("<lt>")) != 0))) {
+                                                   && strncmp_(src, S_LEN("<lt>")) != 0))) {
       // Change <SID>Func to K_SNR <script-nr> _Func.  This name is used
       // for script-local user functions.
       // (room: 5 * 6 = 30 bytes; needed: 3 + <nr> + 1 <= 14)

@@ -783,13 +783,17 @@ cleanup:
   RedrawingDisabled--;
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// Return the number of fold columns to display
 int win_fdccol_count(win_T *wp)
 {
   const char *fdc = wp->w_p_fdc;
 
   // auto:<NUM>
-  if (strncmp(fdc, S_LEN("auto")) == 0) {
+  if (strncmp_(fdc, S_LEN("auto")) == 0) {
     const int fdccol = fdc[4] == ':' ? fdc[5] - '0' : 1;
     int needed_fdccols = getDeepestNesting(wp);
     return MIN(fdccol, needed_fdccols);

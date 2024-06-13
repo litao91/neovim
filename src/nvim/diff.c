@@ -67,6 +67,11 @@
 #include "nvim/window.h"
 #include "xdiff/xdiff.h"
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
+
 static bool diff_busy = false;         // using diff structs, don't change them
 static bool diff_need_update = false;  // ex_diffupdate needs to be called
 
@@ -1050,8 +1055,8 @@ static int check_external_diff(diffio_T *diffio)
               break;
             }
 
-            if (strncmp(linebuf, S_LEN("1c1")) == 0
-                || strncmp(linebuf, S_LEN("@@ -1 +1 @@")) == 0) {
+            if (strncmp_(linebuf, S_LEN("1c1")) == 0
+                || strncmp_(linebuf, S_LEN("@@ -1 +1 @@")) == 0) {
               ok = kTrue;
             }
           }
@@ -1583,13 +1588,13 @@ static bool extract_hunk(FILE *fd, diffhunk_T *hunk, diffstyle_T *diffstyle)
       // @@ -1,3 +1,5 @@
       if (isdigit((uint8_t)(*line))) {
         *diffstyle = DIFF_ED;
-      } else if ((strncmp(line, S_LEN("@@ ")) == 0)) {
+      } else if ((strncmp_(line, S_LEN("@@ ")) == 0)) {
         *diffstyle = DIFF_UNIFIED;
-      } else if ((strncmp(line, S_LEN("--- ")) == 0)
+      } else if ((strncmp_(line, S_LEN("--- ")) == 0)
                  && (vim_fgets(line, LBUFLEN, fd) == 0)
-                 && (strncmp(line, S_LEN("+++ ")) == 0)
+                 && (strncmp_(line, S_LEN("+++ ")) == 0)
                  && (vim_fgets(line, LBUFLEN, fd) == 0)
-                 && (strncmp(line, S_LEN("@@ ")) == 0)) {
+                 && (strncmp_(line, S_LEN("@@ ")) == 0)) {
         *diffstyle = DIFF_UNIFIED;
       } else {
         // Format not recognized yet, skip over this line.  Cygwin diff
@@ -1607,7 +1612,7 @@ static bool extract_hunk(FILE *fd, diffhunk_T *hunk, diffstyle_T *diffstyle)
       }
     } else {
       assert(*diffstyle == DIFF_UNIFIED);
-      if (strncmp(line, S_LEN("@@ ")) != 0) {
+      if (strncmp_(line, S_LEN("@@ ")) != 0) {
         continue;   // not the start of a diff block
       }
       if (parse_diff_unified(line, hunk) == FAIL) {
@@ -2473,70 +2478,70 @@ int diffopt_changed(void)
   char *p = p_dip;
   while (*p != NUL) {
     // Note: Keep this in sync with p_dip_values
-    if (strncmp(p, S_LEN("filler")) == 0) {
+    if (strncmp_(p, S_LEN("filler")) == 0) {
       p += 6;
       diff_flags_new |= DIFF_FILLER;
-    } else if ((strncmp(p, S_LEN("context:")) == 0) && ascii_isdigit(p[8])) {
+    } else if ((strncmp_(p, S_LEN("context:")) == 0) && ascii_isdigit(p[8])) {
       p += 8;
       diff_context_new = getdigits_int(&p, false, diff_context_new);
-    } else if (strncmp(p, S_LEN("iblank")) == 0) {
+    } else if (strncmp_(p, S_LEN("iblank")) == 0) {
       p += 6;
       diff_flags_new |= DIFF_IBLANK;
-    } else if (strncmp(p, S_LEN("icase")) == 0) {
+    } else if (strncmp_(p, S_LEN("icase")) == 0) {
       p += 5;
       diff_flags_new |= DIFF_ICASE;
-    } else if (strncmp(p, S_LEN("iwhiteall")) == 0) {
+    } else if (strncmp_(p, S_LEN("iwhiteall")) == 0) {
       p += 9;
       diff_flags_new |= DIFF_IWHITEALL;
-    } else if (strncmp(p, S_LEN("iwhiteeol")) == 0) {
+    } else if (strncmp_(p, S_LEN("iwhiteeol")) == 0) {
       p += 9;
       diff_flags_new |= DIFF_IWHITEEOL;
-    } else if (strncmp(p, S_LEN("iwhite")) == 0) {
+    } else if (strncmp_(p, S_LEN("iwhite")) == 0) {
       p += 6;
       diff_flags_new |= DIFF_IWHITE;
-    } else if (strncmp(p, S_LEN("horizontal")) == 0) {
+    } else if (strncmp_(p, S_LEN("horizontal")) == 0) {
       p += 10;
       diff_flags_new |= DIFF_HORIZONTAL;
-    } else if (strncmp(p, S_LEN("vertical")) == 0) {
+    } else if (strncmp_(p, S_LEN("vertical")) == 0) {
       p += 8;
       diff_flags_new |= DIFF_VERTICAL;
-    } else if ((strncmp(p, S_LEN("foldcolumn:")) == 0) && ascii_isdigit(p[11])) {
+    } else if ((strncmp_(p, S_LEN("foldcolumn:")) == 0) && ascii_isdigit(p[11])) {
       p += 11;
       diff_foldcolumn_new = getdigits_int(&p, false, diff_foldcolumn_new);
-    } else if (strncmp(p, S_LEN("hiddenoff")) == 0) {
+    } else if (strncmp_(p, S_LEN("hiddenoff")) == 0) {
       p += 9;
       diff_flags_new |= DIFF_HIDDEN_OFF;
-    } else if (strncmp(p, S_LEN("closeoff")) == 0) {
+    } else if (strncmp_(p, S_LEN("closeoff")) == 0) {
       p += 8;
       diff_flags_new |= DIFF_CLOSE_OFF;
-    } else if (strncmp(p, S_LEN("followwrap")) == 0) {
+    } else if (strncmp_(p, S_LEN("followwrap")) == 0) {
       p += 10;
       diff_flags_new |= DIFF_FOLLOWWRAP;
-    } else if (strncmp(p, S_LEN("indent-heuristic")) == 0) {
+    } else if (strncmp_(p, S_LEN("indent-heuristic")) == 0) {
       p += 16;
       diff_indent_heuristic = XDF_INDENT_HEURISTIC;
-    } else if (strncmp(p, S_LEN("internal")) == 0) {
+    } else if (strncmp_(p, S_LEN("internal")) == 0) {
       p += 8;
       diff_flags_new |= DIFF_INTERNAL;
-    } else if (strncmp(p, S_LEN("algorithm:")) == 0) {
+    } else if (strncmp_(p, S_LEN("algorithm:")) == 0) {
       // Note: Keep this in sync with p_dip_algorithm_values.
       p += 10;
-      if (strncmp(p, S_LEN("myers")) == 0) {
+      if (strncmp_(p, S_LEN("myers")) == 0) {
         p += 5;
         diff_algorithm_new = 0;
-      } else if (strncmp(p, S_LEN("minimal")) == 0) {
+      } else if (strncmp_(p, S_LEN("minimal")) == 0) {
         p += 7;
         diff_algorithm_new = XDF_NEED_MINIMAL;
-      } else if (strncmp(p, S_LEN("patience")) == 0) {
+      } else if (strncmp_(p, S_LEN("patience")) == 0) {
         p += 8;
         diff_algorithm_new = XDF_PATIENCE_DIFF;
-      } else if (strncmp(p, S_LEN("histogram")) == 0) {
+      } else if (strncmp_(p, S_LEN("histogram")) == 0) {
         p += 9;
         diff_algorithm_new = XDF_HISTOGRAM_DIFF;
       } else {
         return FAIL;
       }
-    } else if ((strncmp(p, S_LEN("linematch:")) == 0) && ascii_isdigit(p[10])) {
+    } else if ((strncmp_(p, S_LEN("linematch:")) == 0) && ascii_isdigit(p[10])) {
       p += 10;
       linematch_lines_new = getdigits_int(&p, false, linematch_lines_new);
       diff_flags_new |= DIFF_LINEMATCH;

@@ -1858,6 +1858,10 @@ static FILE *fopen_noinh_readbin(char *filename)
   return fdopen(fd_tmp, READBIN);
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// Concatenate Vimscript line if it starts with a line continuation into a growarray
 /// (excluding the continuation chars and leading whitespace)
 ///
@@ -1877,7 +1881,7 @@ static bool concat_continued_line(garray_T *const ga, const int init_growsize, c
   const char *const line = skipwhite_len(p, len);
   len -= (size_t)(line - p);
   // Skip lines starting with '\" ', concat lines starting with '\'
-  if (len >= 3 && strncmp(line, S_LEN("\"\\ ")) == 0) {
+  if (len >= 3 && strncmp_(line, S_LEN("\"\\ ")) == 0) {
     return true;
   } else if (len == 0 || line[0] != '\\') {
     return false;

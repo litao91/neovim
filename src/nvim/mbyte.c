@@ -363,6 +363,10 @@ static int enc_canon_search(const char *name)
   return -1;
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 // Find canonical encoding "name" in the list and return its properties.
 // Returns 0 if not found.
 int enc_canon_props(const char *name)
@@ -371,9 +375,9 @@ int enc_canon_props(const char *name)
   int i = enc_canon_search(name);
   if (i >= 0) {
     return enc_canon_table[i].prop;
-  } else if (strncmp(name, S_LEN("2byte-")) == 0) {
+  } else if (strncmp_(name, S_LEN("2byte-")) == 0) {
     return ENC_DBCS;
-  } else if (strncmp(name, S_LEN("8bit-")) == 0 || strncmp(name, S_LEN("iso-8859-")) == 0) {
+  } else if (strncmp_(name, S_LEN("8bit-")) == 0 || strncmp_(name, S_LEN("iso-8859-")) == 0) {
     return ENC_8BIT;
   }
   return 0;
@@ -393,10 +397,10 @@ int bomb_size(void)
     if (*curbuf->b_p_fenc == NUL
         || strcmp(curbuf->b_p_fenc, "utf-8") == 0) {
       n = 3;
-    } else if (strncmp(curbuf->b_p_fenc, S_LEN("ucs-2")) == 0
-               || strncmp(curbuf->b_p_fenc, S_LEN("utf-16")) == 0) {
+    } else if (strncmp_(curbuf->b_p_fenc, S_LEN("ucs-2")) == 0
+               || strncmp_(curbuf->b_p_fenc, S_LEN("utf-16")) == 0) {
       n = 2;
-    } else if (strncmp(curbuf->b_p_fenc, S_LEN("ucs-4")) == 0) {
+    } else if (strncmp_(curbuf->b_p_fenc, S_LEN("ucs-4")) == 0) {
       n = 4;
     }
   }
@@ -2188,10 +2192,10 @@ const char *mb_unescape(const char **const pp)
 /// Skip the Vim specific head of a 'encoding' name.
 char *enc_skip(char *p)
 {
-  if (strncmp(p, S_LEN("2byte-")) == 0) {
+  if (strncmp_(p, S_LEN("2byte-")) == 0) {
     return p + 6;
   }
-  if (strncmp(p, S_LEN("8bit-")) == 0) {
+  if (strncmp_(p, S_LEN("8bit-")) == 0) {
     return p + 5;
   }
   return p;
@@ -2228,27 +2232,27 @@ char *enc_canonize(char *enc)
   p = enc_skip(r);
 
   // Change "microsoft-cp" to "cp".  Used in some spell files.
-  if (strncmp(p, S_LEN("microsoft-cp")) == 0) {
+  if (strncmp_(p, S_LEN("microsoft-cp")) == 0) {
     memmove(p, p + STRLEN_LITERAL("microsoft-"),
             (size_t)(p_e - (p + STRLEN_LITERAL("microsoft-"))) + 1);
   }
 
   // "iso8859" -> "iso-8859"
-  if (strncmp(p, S_LEN("iso8859")) == 0) {
+  if (strncmp_(p, S_LEN("iso8859")) == 0) {
     memmove(p + STRLEN_LITERAL("iso-"), p + STRLEN_LITERAL("iso"),
             (size_t)(p_e - (p + STRLEN_LITERAL("iso"))) + 1);
     p[STRLEN_LITERAL("iso")] = '-';
   }
 
   // "iso-8859n" -> "iso-8859-n"
-  if (strncmp(p, S_LEN("iso-8859")) == 0 && p[8] != '-') {
+  if (strncmp_(p, S_LEN("iso-8859")) == 0 && p[8] != '-') {
     memmove(p + STRLEN_LITERAL("iso-8859-"), p + STRLEN_LITERAL("iso-8859"),
             (size_t)(p_e - (p + STRLEN_LITERAL("iso-8859"))) + 1);
     p[STRLEN_LITERAL("iso-8859")] = '-';
   }
 
   // "latin-N" -> "latinN"
-  if (strncmp(p, S_LEN("latin-")) == 0) {
+  if (strncmp_(p, S_LEN("latin-")) == 0) {
     memmove(p + STRLEN_LITERAL("latin"), p + STRLEN_LITERAL("latin-"),
             (size_t)(p_e - (p + STRLEN_LITERAL("latin-"))) + 1);
   }

@@ -95,6 +95,10 @@
 #include "nvim/vim_defs.h"
 #include "nvim/window.h"
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 // TODO(ZyX-I): Remove DICT_MAXNEST, make users be non-recursive instead
 
 #define DICT_MAXNEST 100        // maximum nesting of lists and dicts
@@ -2161,7 +2165,7 @@ void del_menutrans_vars(void)
 {
   hash_lock(&globvarht);
   HASHTAB_ITER(&globvarht, hi, {
-    if (strncmp(hi->hi_key, S_LEN("menutrans_")) == 0) {
+    if (strncmp_(hi->hi_key, S_LEN("menutrans_")) == 0) {
       delete_var(&globvarht, hi);
     }
   });
@@ -5618,7 +5622,7 @@ void common_function(typval_T *argvars, typval_T *rettv, bool is_funcref)
     int dict_idx = 0;
     int arg_idx = 0;
     list_T *list = NULL;
-    if (strncmp(s, S_LEN("s:")) == 0 || strncmp(s, S_LEN("<SID>")) == 0) {
+    if (strncmp_(s, S_LEN("s:")) == 0 || strncmp_(s, S_LEN("<SID>")) == 0) {
       // Expand s: and <SID> into <SNR>nr_, so that the function can
       // also be called from another script. Using trans_function_name()
       // would also work, but some plugins depend on the name being

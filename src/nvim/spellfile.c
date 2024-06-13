@@ -3557,6 +3557,10 @@ static int store_aff_word(spellinfo_T *spin, char *word, char *afflist, afffile_
   return retval;
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 // Read a file with a list of words.
 static int spell_read_wordfile(spellinfo_T *spin, char *fname)
 {
@@ -3615,7 +3619,7 @@ static int spell_read_wordfile(spellinfo_T *spin, char *fname)
 
     if (*line == '/') {
       line++;
-      if (strncmp(line, S_LEN("encoding=")) == 0) {
+      if (strncmp_(line, S_LEN("encoding=")) == 0) {
         if (spin->si_conv.vc_type != CONV_NONE) {
           smsg(0, _("Duplicate /encoding= line ignored in %s line %" PRIdLINENR ": %s"),
                fname, lnum, line - 1);
@@ -3637,7 +3641,7 @@ static int spell_read_wordfile(spellinfo_T *spin, char *fname)
         continue;
       }
 
-      if (strncmp(line, S_LEN("regions=")) == 0) {
+      if (strncmp_(line, S_LEN("regions=")) == 0) {
         if (spin->si_region_count > 1) {
           smsg(0, _("Duplicate /regions= line ignored in %s line %" PRIdLINENR ": %s"),
                fname, lnum, line);
@@ -4766,7 +4770,7 @@ void ex_mkspell(exarg_T *eap)
   char *arg = eap->arg;
   bool ascii = false;
 
-  if (strncmp(arg, S_LEN("-ascii")) == 0) {
+  if (strncmp_(arg, S_LEN("-ascii")) == 0) {
     ascii = true;
     arg = skipwhite(arg + 6);
   }
@@ -5464,7 +5468,7 @@ void spell_add_word(char *word, int len, SpellAddType what, int idx, bool undo)
         if (fpos_next < 0) {
           break;  // should never happen
         }
-        if (strncmp(word, line, (size_t)len) == 0
+        if (strncmp_(word, line, (size_t)len) == 0
             && (line[len] == '/' || (uint8_t)line[len] < ' ')) {
           // Found duplicate word.  Remove it by writing a '#' at
           // the start of the line.  Mixing reading and writing

@@ -28,6 +28,10 @@
 # include "context.c.generated.h"
 #endif
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 int kCtxAll = (kCtxRegs | kCtxJumps | kCtxBufs | kCtxGVars | kCtxSFuncs
                | kCtxFuncs);
 
@@ -261,7 +265,7 @@ static inline void ctx_save_funcs(Context *ctx, bool scriptonly)
 
   HASHTAB_ITER(func_tbl_get(), hi, {
     const char *const name = hi->hi_key;
-    bool islambda = (strncmp(name, S_LEN("<lambda>")) == 0);
+    bool islambda = (strncmp_(name, S_LEN("<lambda>")) == 0);
     bool isscript = ((uint8_t)name[0] == K_SPECIAL);
 
     if (!islambda && (!scriptonly || isscript)) {

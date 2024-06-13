@@ -285,6 +285,10 @@ void profile_reset(void)
   XFREE_CLEAR(profile_fname);
 }
 
+static int strncmp_ (const char *s1, const char *s2, size_t n)
+     __THROW __attribute_pure__ __nonnull ((1, 2)) {
+  return strncmp(s1, s2, n);
+}
 /// ":profile cmd args"
 void ex_profile(exarg_T *eap)
 {
@@ -294,7 +298,7 @@ void ex_profile(exarg_T *eap)
   int len = (int)(e - eap->arg);
   e = skipwhite(e);
 
-  if (len == 5 && strncmp(eap->arg, S_LEN("start")) == 0 && *e != NUL) {
+  if (len == 5 && strncmp_(eap->arg, S_LEN("start")) == 0 && *e != NUL) {
     xfree(profile_fname);
     profile_fname = expand_env_save_opt(e, true);
     do_profiling = PROF_YES;
@@ -369,12 +373,12 @@ void set_context_in_profile_cmd(expand_T *xp, const char *arg)
     return;
   }
 
-  if ((end_subcmd - arg == 5 && strncmp(arg, S_LEN("start")) == 0)
-      || (end_subcmd - arg == 4 && strncmp(arg, S_LEN("file")) == 0)) {
+  if ((end_subcmd - arg == 5 && strncmp_(arg, S_LEN("start")) == 0)
+      || (end_subcmd - arg == 4 && strncmp_(arg, S_LEN("file")) == 0)) {
     xp->xp_context = EXPAND_FILES;
     xp->xp_pattern = skipwhite(end_subcmd);
     return;
-  } else if (end_subcmd - arg == 4 && strncmp(arg, S_LEN("func")) == 0) {
+  } else if (end_subcmd - arg == 4 && strncmp_(arg, S_LEN("func")) == 0) {
     xp->xp_context = EXPAND_USER_FUNC;
     xp->xp_pattern = skipwhite(end_subcmd);
     return;
